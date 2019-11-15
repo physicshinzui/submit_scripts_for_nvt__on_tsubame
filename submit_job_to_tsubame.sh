@@ -9,13 +9,13 @@ module load intel-mpi
 
 #----must be modified depending on your environment----
 export KKTOOLS=/gs/hs0/hp170020/kasahara/kktools
-export OMGROOT=/gs/hs0/hp170020/kasahara/omegagene/og0_v042i
+OMGROOT=/gs/hs0/hp170020/kasahara/omegagene/og0_v042i
 OMGTK=${OMGROOT}/toolkit
 OMG=${OMGROOT}/omegagene_gpu
 export LD_LIBRARY_PATH=/gs/hs0/hp170020/kasahara/omegagene/og0_v042i:$LD_LIBRARY_PATH
 #-----------------------------------------------------
 
-path_to_input=../../inputs/
+path_to_input=../inputs
 python2.7 ${OMGTK}/presto_generate_velocities.py \
     -i      ${path_to_input}/npt_eq.pdb\
     --i-tpl ${path_to_input}/system_1maz_filled.tpl \
@@ -28,4 +28,4 @@ python2.7 ${OMGTK}/presto_generate_velocities.py \
 python2.7 ${OMGTK}/mdinput_generator.py -i system.cfg \
                                         -o system.cls \
                                         -v v.0.40.c  > inputgen.log
-${OMG} --cfg md.cfg --inp system.cls > ${OUT} &
+${OMG} --cfg md.cfg --inp system.cls > md.out
