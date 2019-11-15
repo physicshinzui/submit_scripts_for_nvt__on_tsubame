@@ -1,0 +1,85 @@
+#!/bin/bash
+set -Ceu
+
+read -p "How many directories do you wanna make? [integer]: " ndirs
+#read -p "Do you want to restart? (y/n): " yn
+#if [ $yn = "y" ]; then
+#  read -p "Pass me Pre-md directory (Full path): " mdXdir
+#  ls -d ${mdXdir}
+#
+#  read -p "Prefix of restart files: " rest_prefix
+#  read -p "suffix of restart files: " rest_suffix
+#  echo "  #Cheking if they really exist"
+#  ls ${mdXdir%/}/no1/${rest_prefix}*$rest_suffix
+#else
+#  read -p "Temperature: " tem
+#fi
+
+#echo 'Making directories ...'
+#for i in $(seq 0 $(($ndirs - 1))); do
+#    mkdir $i
+#done
+#
+#echo 'Generating restart files ...'
+#for i in $(seq 0 $(($ndirs - 1))); do
+#    1_generate_velocities.bash $tem ${NrunsEachNode} >> initial_velo.log #&
+
+echo 'Making md control (.cfg) file ...'
+path_to_mdcfg_template=./templates/md.cfg
+T=300
+COD_OUT='md.crd'
+RST_OUT='rest.rst'
+for i in $(seq 0 $(($ndirs - 1))); do
+    cat $path_to_mdcfg_template | sed -e "s!#{GPUID}!${i}!g" \
+                                      -e "s!#{TEMPERATURE}!${T}!g" \
+                                      -e "s!#{COORDS_FILE}!${i}_${COD_OUT}!g" \
+                                      -e "s!#{OUT_RESTAR_FILE}!${i}_${RST_OUT}!g" > md_${i}.cfg
+done
+
+echo 'Making system config (.cfg) file ...'
+path_to_syscfg_template=./templates/system.cfg
+for i in $(seq 0 $(($ndirs - 1))); do
+    cat $path_to_syscfg_template | sed -e "s!#{GPUID}!${i}!g" \
+                                       -e "s!#{TEMPERATURE}!${T}!g" \
+                                       -e "s!#{COORDS_FILE}!${i}_${COD_OUT}!g" \
+                                       -e "s!#{OUT_RESTAR_FILE}!${i}_${RST_OUT}!g" > sys_${i}.cfg
+done
+
+exit
+prefix="no"
+for i in $(seq 1 $Ndirs); do
+  echo ""
+  echo "##Number $i"
+
+  { cp -r base_dir $prefix$i; cd $prefix$i; echo "I'm in `pwd`"; } 
+
+#***
+  if [ $yn = "n" ]; then
+    echo "Executing 1_generate_velocities.bash $tem ${NrunsEachNode}"
+    bash ../1_generate_velocities.bash $tem ${NrunsEachNode}>> initial_velo.log &
+  else
+    echo "Note) Because this is a restart, initial velocities were not generated."
+  fi
+
+#***
+  echo "Executing 2_make_cfg.py"
+  if [ $yn = "y" ]; then
+    restfile_names=`ls ${mdXdir%/}/${prefix}${i}/md*.restart`
+    echo "$restfile_names"
+    python ../2_make_cfg.py -i ${restfile_names} 
+  else
+    #wait
+    { wait; restfile_names=`ls init*.restart`; }
+    python ../2_make_cfg.py -i $restfile_names 
+  fi 
+   
+  #wait
+
+#***
+  { wait; echo "Executing 3_mdinput_gen.bash"; }
+  bash ../3_mdinput_gen.bash &
+
+#***
+  cd ..
+
+done

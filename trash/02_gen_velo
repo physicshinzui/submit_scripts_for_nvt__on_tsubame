@@ -1,0 +1,20 @@
+#!/bin/bash
+set -Ceu
+
+export OMGTK=../../omegagene-master/toolkit
+
+path_to_input=/Users/siida/Dropbox/01code/prestoPrep/work/mcmd/inputs
+N=$( basename run* | wc -l )
+
+for i in $(seq 1 $N); do
+    cd run${i}
+    python ${OMGTK}/presto_generate_velocities.py \
+        -i      ${path_to_input}/npt_eq.pdb\
+        --i-tpl ${path_to_input}/system_1maz_filled.tpl \
+        --i-shk ${path_to_input}/system_1maz_filled.shk  \
+        -t 310  \
+        -s $RANDOM \
+        -o init.rst  \
+        --mol --check >> init_velo.log  &
+    cd ..
+done

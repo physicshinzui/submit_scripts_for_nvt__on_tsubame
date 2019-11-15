@@ -1,0 +1,9 @@
+#!/bin/bash
+set -Ceu
+
+read -p "How many directories do you wanna make? [integer]: " ndirs
+
+echo 'Making directories ...'
+for i in $(seq 1 $ndirs); do
+    mkdir run$i
+done
