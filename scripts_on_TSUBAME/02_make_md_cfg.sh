@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eu
+set -Ceu
 
 echo 'Making md control (.cfg) file ...'
 path_to_mdcfg_template=../../templates/md.cfg

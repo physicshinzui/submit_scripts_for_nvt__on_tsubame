@@ -4,11 +4,6 @@ set -Ceu
 read -p "How many nodes do you wanna use? [integer]: " n_nodes
 md_no=$(cat md_stage.inp | awk '{print $1}')
 
-if [ -e md${md_no} ]; then
-  echo "Stop. There exist the directory md${md_no}."
-  exit
-fi
-
 echo 'Making directories ...'
 for inode in $(seq 1 $n_nodes)
 do
