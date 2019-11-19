@@ -29,11 +29,11 @@ do
         -o init_${id}.rst  \
         --mol --check >> init_velo_${id}.log &
 
-    python2.7 ${OMGTK}/mdinput_generator.py -i system.cfg \
-                                            -o system.cls \
+    python2.7 ${OMGTK}/mdinput_generator.py -i system_${id}.cfg \
+                                            -o system_${id}.cls \
                                             -v v.0.39.h  > inputgen_${id}.log
 
-    ${OMG} --cfg md_${id}.cfg --inp system.cls > md_${id}.out &
+    ${OMG} --cfg md_${id}.cfg --inp system_${id}.cls > md_${id}.out &
 
 done
 wait
