@@ -1,9 +1,17 @@
 #!/bin/bash
 set -Ceu
 
-read -p "How many directories do you wanna make? [integer]: " ndirs
+read -p "How many nodes do you wanna use? [integer]: " n_nodes
+md_no=$(cat md_stage.inp | awk '{print $1}')
+
+if [ -e md${md_no} ]; then
+  echo "Stop. There exist the directory md${md_no}."
+  exit
+fi
 
 echo 'Making directories ...'
-for i in $(seq 1 $ndirs); do
-    mkdir run$i
+for inode in $(seq 1 $n_nodes)
+do
+    echo "mkdir -p md${md_no}/n${inode}"
+    mkdir -p md${md_no}/n${inode}
 done
