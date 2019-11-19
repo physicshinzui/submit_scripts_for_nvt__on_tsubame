@@ -26,8 +26,8 @@ do
         --i-shk ${path_to_input}/system_1maz_filled.shk  \
         -t 310  \
         -s $RANDOM \
-        -o init_${id}.rst  \
-        --mol --check >> init_velo_${id}.log &
+        -o init_${id}.rst \
+        --mol --check >> init_velo_${id}.log
 
     python2.7 ${OMGTK}/mdinput_generator.py -i system_${id}.cfg \
                                             -o system_${id}.cls \

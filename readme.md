@@ -1,5 +1,2 @@
-# Scripts for executing myPresto/Omegagene 
+# Scripts for executing myPresto/Omegagene On TSUBAME3.0
 
-This repository includes just scripts to submit jobs.
-
-I would like you to arrange ./templates/system.cfg by hand.
